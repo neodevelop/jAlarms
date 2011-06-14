@@ -41,10 +41,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-  <scm>
-    <connection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/tags/jalarms-1.5.2/jalarms-aop</connection>
-    <developerConnection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/tags/jalarms-1.5.2/jalarms-aop</developerConnection>
-    <url>http://jalarms.svn.sourceforge.net/viewvc/jalarms/tags/jalarms-1.5.2/jalarms-aop</url>
-  </scm>
 </project>
