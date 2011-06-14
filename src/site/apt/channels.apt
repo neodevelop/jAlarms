@@ -1,0 +1,39 @@
+	-----
+	Alarm Channels
+	-----
+	Enrique Zamudio
+	-----
+
+Implemented alarm channels
+
+  Currently, jAlarms has the ability to send alarms through the following channels:
+
+  [test] This is a very simple channel that you can use when you are setting up your application. Very convenient for a development environment in which you do not really want to send an alarm but you want to know that the AlarmSender is properly setup. It only prints the alarm message to the standard output.
+
+  [email] This channel uses Spring's JavaMailSender class to send email alarms. It uses a SimpleMailMessage as a template, replacing a <<<$\{msg\}>>> marker in the mail text with the alarm message.
+
+  [Twitter] This channel uses a {{{http://twitter.com/}Twitter}} account to post alarm messages as status updates. This is especially useful if you have several applications that you want to monitor; you create a Twitter account for each app, associate it with the jAlarms Twitter app by running the TwitterAuth program (included in the library), and use the resulting access token and token secret as username/password for the TwitterChannel component. The sysadmins and developers, support people, etc can follow those accounts to get notifications of any alarms in those apps.
+
+  [External Process] The CommandLineChannel allows you to run an external program to handle the alarm message. The channel can write to the external process' standard input (to send it the message) or it can pass the message as a command-line parameter.
+
+  [HTTP invocation] This channel sends the alarm to a URL via HTTP GET or POST. With GET the alarm is sent as a query parameter, and with POST it can be sent as part of the posted data.
+
+  [MSN Messenger] This channel uses a MSN Messenger account to send alarms. To use this channel, first you have to create the account you want your app to use, and the contacts that should receive the alarms. Then set up the MsnChannel component with the username and password of the account. This channel will then send any alarms it receives as messages to everyone in its contact list. It also allows you to programmatically add to or remove contacts from the list.
+
+  [SMPP] This channel uses a SMPP 3.4 Transmitter connection to send alarms to the mobile numbers you configure in the SmppChannel component. <<NOTICE:>> for this to work, you need a SMPP account, which you usually get with a cellphone company, but you have to connect through secure channels, etc. However if you have a SMPP connection already set up, this can be very useful.
+
+[]
+  All these channels have a parameter, <<<minResendInterval>>>, which is the number of milliseconds to wait before resending a previously sent alarm message. Each channel can have a different value for this; for example you might want to set a higher value (several minutes) between emails, a low value (say 30 seconds) between Tweets, and a very low value (10 seconds) over MSN. They all default to 60 seconds. The resend interval is used by the {{{cache.html}alarm cache}} to determine if a message should be sent over a specific channel.
+
+  All these included channels extend the AbstractAlarmChannel class, which does some useful stuff and you can
+  extend to create your own custom channels. For example it already has a single-thread <<<ExecutorService>>>
+  which it uses to send alarms without delaying the normal flow of your app.
+
+Custom channels
+
+  In case you have access to some notification service, like a web service to send SMS or even an Asterisk server
+  to place a call to the admin with a recording, you can implement your own custom channel and use it with the
+  AlarmSender. You can either implement the <<<AlarmChannel>>> interface, or extend the <<<AbstractAlarmChannel>>>
+  abstract class, in which case you just need to implement the <<<createSendTask>>> method, returning a
+  <<<Runnable>>> that will be executed inside a single-thread ExecutorService. Obviously you will also need to
+  implement whatever you need for your channel to connect to the notification service.

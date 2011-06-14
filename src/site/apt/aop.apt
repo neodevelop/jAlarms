@@ -1,0 +1,78 @@
+	---
+	Annotations & AOP
+	---
+	Enrique Zamudio
+	---
+
+Using annotations and Aspect-Oriented Programming
+
+  jAlarms can also be configured to be used with {{{http://www.eclipse.org/aspectj/}AspectJ}} so that you can annotate methods or classes to enable
+  them to send alarms whenever an unhandled RuntimeException occurs. The way you do this is to setup the
+  AlarmAspect class with a reference to your AlarmSender, and then add this aspect to your AOP setup.
+
+  The easiest way to do this in an application is through Spring AOP, since you only need to add the AOP schema,
+  and declare the AOP AspectJ Autoproxying mechanism. The configuration looks like this:
+
++-----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+<!-- This is to enable the autoproxying mechanism, so that any annotated beans will be proxied
+  (this is necessary for the AlarmAspect to work) -->
+<aop:aspectj-autoproxy />
+
+<bean id="alarmAspect" class="com.solab.alarms.aop.AlarmAspect">
+  <!-- If you only have one AlarmSender configured and it's called "alarmSender",
+       then you don't need to specify this -->
+  <property name="alarmSender" ref="alarmSender" />
+  <property name="message" value="This is the alarm message that precedes the exception" />
+  <!-- You can set this to 0 to omit the stack trace, -1 to include the full stack trace,
+    or any other number to only include that number of lines of stack trace. -->
+  <property name="includeStackTrace" value="2" />
+</bean>
+
+</beans>
++-----
+
+  After that, you can use the <<<@AlarmOnException>>> annotation on a class or method and if a RuntimeException
+  is thrown that the method does not handle, an alarm will be sent. The annotation has some properties, all of
+  them optional.
+
++-----
+@AlarmOnException(message="This is the alarm message", source="some-src", stack=5)
+public class MyClass {
+
+  public void doSomething() {
+    //If an exception is thrown here, an alarm is sent
+  }
+
+  public void doSomethingElse() {
+    //An exception thrown here also sends an alarm.
+  }
+}
+
+public class AnotherClass {
+
+  public void doSomething() {
+    //No alarm is sent here
+  }
+
+  @AlarmOnException
+  public void doSomethingElse() {
+    //An alarm is sent in case of an exception, with the message that
+    //was configured in the aspect, no source, and the number of
+    //stack trace lines configured in the aspect.
+  }
+}
++-----
+
+  <<IMPORTANT Note about proxying:>> If you annotate methods that are declared in an interface, then a JDK
+  dynamic proxy can be used. If you annotate a class that implements an interface (or two or more), then only
+  the methods declared in those interfaces will send alarm in case of an exception. If you want all of the
+  methods to be adviced by the aspect, or you want to annotate a method that is not declared in any interface,
+  then you need to use {{{http://cglib.sourceforge.net/}CGLIB}} proxies. If you want to use CGLIB proxies by
+  default, you can add the <<<proxy-target-class="true">>> attribute to the <<<aop:aspectj-autoproxy>>> entry
+  in your Spring config.

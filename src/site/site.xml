@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jalarms">
+<bannerLeft>
+	<name>jAlarms</name>
+	<src>images/logo.png</src>
+	<href>http://jalarms.sourceforge.net/</href>
+</bannerLeft>
+<bannerRight>
+	<src>images/logo.png</src>
+</bannerRight>
+<body>
+	<links>
+		<item name="Project Page" href="http://sf.net/projects/jalarms/" />
+		<item name="Download" href="http://sourceforge.net/projects/jalarms/files/jAlarms/"/>
+	</links>
+
+	<menu name="jAlarms 1.5">
+		<item name="Introduction" href="index.html"/>
+		<item name="Core API docs" href="core/apidocs/index.html" />
+		<item name="Channel API docs" href="channels/apidocs/index.html" />
+		<item name="AOP API docs" href="aop/apidocs/index.html" />
+		<item name="Beginner's Guide" href="guide.html"/>
+		<item name="Alarm Channels" href="channels.html" />
+		<item name="Xmpp Channel" href="xmpp_channel.html" />
+		<item name="Alarm Sources" href="sources.html"/>
+		<item name="AOP &amp; Annotations" href="aop.html"/>
+		<item name="Message caching" href="cache.html" />
+		<item name="Alarm Buffering" href="buffer.html" />
+		<item name="Download" href="http://sourceforge.net/projects/jalarms/files/jAlarms/" />
+		<item name="Español" href="/es/index.html" />
+	</menu>
+</body>
+<poweredBy>
+	<logo name="Hosted by SourceForge" href="http://sourceforge.net/donate/index.php?group_id=263883"
+		img="http://images.sourceforge.net/images/project-support.jpg" />
+</poweredBy>
+</project>

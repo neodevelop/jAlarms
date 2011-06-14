@@ -1,0 +1,70 @@
+	-----
+	Xmpp Channel 
+	-----
+	Erick Camacho
+	-----
+
+  El canal Xmpp permite enviar alarmas a un servidor de chat xmpp como Google Talk. Es muy simple de usar, sólo se tienen que especificar los datos del servidor al que se quiere conectar, así como los datos de la cuenta que se usará para enviar mensajes:
+
++-----
+<bean id="xmppChannel" class="com.solab.alarms.channels.XmppChannel">
+ <property id="username" value="user"/>
+ <property id="domain" value="google.com"/>
+ <property id="password" value="mypassword"/>
+ <property id="host" value="talk.google.com"/>
+ <property id="port" value="5222"/>
+ <!-- necesario para conectarse a google talk -->
+ <property id="SASLAuthenticationEnabled" value="false"/>
+</bean>
++-----
+
+  En este ejemplo básico, las alarmas serán enviadas a todos los contactos de la cuenta. Opcionalmente, se puede cambiar este comportamiento especificando cualquiera de las siguientes propiedades:
+
+  [contactsBySource] Un mapa que usa como llave una fuente de alarma y como valor una lista de contactos válidos.
+
+  [groupsBySource] Un mapa que usa como llave una fuente de alarma y como valor una lista de grupos válidos. Estos grupos deben haber sido configurados en la cuenta que se está usando para enviar mensajes.
+
+  []
+
+  Aquí hay un ejemplo de una configuración así:
+
++-----
+   <bean id="xmppChannel" class="com.solab.alarms.channels.XmppChannel">
+      <property name="username" value="user"/>
+      <property name="domain" value="google.com"/>
+      <property name="password" value="mypassword"/>
+      <property name="host" value="talk.google.com"/>
+      <property name="port" value="5222"/>
+      <property name="SASLAuthenticationEnabled" value="false"/>
+      <property name="contactsBySource">
+         <map>
+            <entry key="dataop">
+               <list>
+                  <value>john.doe@gmail.com</value>
+                  <value>hilbert@gmail.com</value>
+               </list>
+            </entry>
+            <entry key="businessop">
+               <list>
+                  <value>provider@gmail.com</value>
+               </list>
+            </entry>
+         </map>
+      </property>
+      <property id="groupsBySource">
+         <map>
+            <entry key="dataop">
+               <list>
+                  <value>dbas</value>
+                  <value>sysadmins</value>
+               </list>
+            </entry>
+            <entry key="businessop">
+               <list>
+                  <value>sales</value>
+               </list>
+            </entry>
+         </map>
+      </property>
+   </bean>
++-----

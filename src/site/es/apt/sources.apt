@@ -1,0 +1,34 @@
+	-----
+	Fuentes de alarmas
+	-----
+	Enrique Zamudio
+	-----
+
+Fuentes de alarmas
+
+  En una aplicación de tamaño mediano a grande, por lo general hay varios módulos que interactúan entre ellos y
+  cada módulo es responsabilidad de distintas personas o grupos. En estos casos, es deseable que cuando se dispare
+  una alarma desde un módulo, solamente se le notifique a los responsables de dicho módulo; es por esto que el
+  método <<<AlarmSender.sendAlarm()>>> tiene un parámetro <source>; éste sirve para especificar el origen de la
+  alarma. Se puede utilizar cualquier cadena; es recomendable utilizar cadenas cortas.
+
+  Algunos canales de alarmas tienen una lista de destinatarios, como el mail, SMPP o MSN. En estos canales
+  se pueden definir varias listas de destinatarios, una por cada fuente que se quiera configurar, y aparte una
+  lista por defecto.
+
+  Otros canales que únicamente publican un mensaje, como el de Twitter, pueden utilizar un solo parámetro de
+  fuente para determinar si envían la alarma o no, y solamente enviar alarmas cuando son para la fuente
+  que se ha especificado en el canal.
+
+  Por ejemplo, el MailChannel se puede configurar con un mensaje que tenga los destinatarios <<a>>@example.com
+  y <<b>>@example.com. Además se le puede poner un mensaje distinto para la fuente <ex1>, con los destinos
+  <<cc>>@example.com y <<dd>>@example.com, y un tercer mensaje para fuente <ex1> con los destinos
+  <<xxx>>@example.com y <<zzz>>@example.com. Entonces, si se envia una alarma con fuente <ex1>, se notificará
+  a <<cc>> y <<dd>>, mientras que una alarma con fuente <ex2> generará un coreo a los usuarios <<xxx>> y <<zzz>>;
+  una alarma sin fuente, o con una no configurada, como <ex9>, causará un envío de correo a <<a>> y <<b>>.
+
+  El siguiente diagrama ilustra cómo cada canal maneja sus fuentes. En este ejemplo, el mensaje "A" se envía
+  desde dos componentes, usando dos fuentes distintas, de manera que los canales los distinguen como si fueran
+  distintos y los envían a los destinos correspondientes según la fuente.
+
+[../images/sources.png] El funcionamiento de las fuentes de alarma.

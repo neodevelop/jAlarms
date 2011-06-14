@@ -1,0 +1,78 @@
+		---
+		Inicio
+		---
+		Enrique Zamudio
+		---
+
+jAlarms
+
+  Bienvenido al proyecto {{{http://sf.net/projects/jalarms}jAlarms}}. Puedes ver la referencia de
+  {{{../core/apidocs/index.html}Javadoc}}, o ir a la {{{http://sf.net/projects/jalarms}página del proyecto}}
+  para descargar, notificar algún defecto, etc.
+
+  <<IMPORTANTE:>> A partir de la versión 1.5.2, jAlarms se divide en 3 módulos:
+
+  [core] Contiene las clases principales, así como algunos canales que no tienen dependencias externas.
+
+  [channels] Contiene implementaciones de canales que requieren dependencias externas, así como algunas otras
+  clases con dependencias externas (como el {{{cache.html}cache}} con memcached).
+
+  [aop] Contiene las clases y anotaciones necesarias para usar jAlarms en modo {{{aop.html}orientado a aspectos}}.
+
+[]
+
+* Objetivo
+
+  El objetivo de este proyecto es proveer a los desarrolladores de aplicaciones Java con una herramienta para
+  implementar de manera sencilla, un mecanismo de alarmas en aplicaciones de servidor. Las aplicaciones de
+  servidor por lo general deben ser monitoreadas constantemente para verificar que no tengan problemas,
+  pero en ocasiones surge alguna condición de la que alguien se tiene que enterar tan pronto como sea posible,
+  como por ejemplo una excepción que solamente ocurre como consecuencia de alguna falla muy grave.
+  En vez de tener que escribir un montón de código para enviar una notificación o un SMS al administrador
+  de sistemas o al equipo de desarrollo, se puede utilizar esta biblioteca.
+
+* Cómo funciona
+
+  Este diagrama muestra el funcionamiento de jAlarms; es bastante simple. Tus componentes invocan el método
+  <<<sendAlarm()>>> en el componente <<<AlarmSender>>>, el cual a su vez envía los mensajes de alarma por medio
+  de los canales que tenga disponibles.
+  Puedes crear tus propios canales o usar solamente los que vienen incluidos con la biblioteca, configurándolos
+  de la manera que mejor se ajuste para tu aplicación.
+
+[../images/basic_work.png] Diagrama básico que ilustra el funcionamiento de jAlarms
+
+* Ejemplo
+
+  Supongamos que tienes una cuenta de email configurada únicamente para enviar notificaciones de alarmas.
+  También puedes tener una cuenta de MSN para el mismo propósito. Así que puedes configurar un AlarmSender con un
+  MsnChannel y un MailChannel, e inyectarlo a cualquier componente que necesite enviar una alarma. El código
+  para enviar una alarma se ve entonces como sigue:
+
++---
+private AlarmSender alarmer;
+.
+.
+.
+try {
+    //aquí va tu código
+} catch (SomeException ex) {
+    //Aquí hay que manejar la excepción arrojada, SomeException
+    //y luego enviamos la alarma
+    alarmer.sendAlarm("Auxilio!", null);
+}
++---
+
+  El mensaje <<<Auxilio!>>> será enviado por correo a los destinatarios configurados en el MailChannel, así como
+  a todos los contactos de la cuenta configurada en el MsnChannel.
+  
+  Si posteriormente tienes accesoa algún otro servicio, por ejemplo un servidor SMPP, puedes configurar el
+  SmppChannel y agregarlo a los canales del AlarmSender; entonces, sin tener que modificar tu código, se enviarán
+  alarmas via SMS. La configuración del AlarmSender se puede realizar muy fácilmente con {{{http://www.springframework.org/}Spring}},
+  aunque no es obligatorio hacerlo de esa manera.
+
+  En la guía de principiantes se incluye un ejemplo de {{{guide.html}configuración de jAlarms con Spring}}.
+
+* Licenciamiento
+
+  jAlarms es software distribuido bajo la licencia LGPL versión 2.1. El texto completo para esta licencia
+  se encuentra {{{http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html}aquí}}.

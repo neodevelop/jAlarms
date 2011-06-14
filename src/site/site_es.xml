@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jalarms">
+<bannerLeft>
+	<name>jAlarms</name>
+	<src>../images/logo.png</src>
+	<href>http://jalarms.sourceforge.net/</href>
+</bannerLeft>
+<bannerRight>
+	<src>../images/logo.png</src>
+</bannerRight>
+<body>
+	<links>
+		<item name="Página del proyecto" href="http://sf.net/projects/jalarms/" />
+		<item name="Descargar" href="http://sourceforge.net/projects/jalarms/files/jAlarms/"/>
+	</links>
+
+	<menu name="jAlarms 1.5">
+		<item name="Introducción" href="index.html"/>
+		<item name="Documentación API Core" href="../core/apidocs/index.html" />
+		<item name="Documentación API canales" href="../channels/apidocs/index.html" />
+		<item name="Documentación API AOP" href="../aop/apidocs/index.html" />
+		<item name="Guía de inicio" href="guide.html"/>
+		<item name="Canales de alarmas" href="channels.html" />
+		<item name="Canal xmpp" href="xmpp_channel.html" />
+		<item name="Fuentes de alarmas" href="sources.html"/>
+		<item name="AOP y Anotaciones" href="aop.html"/>
+		<item name="Cache de alarmas" href="cache.html" />
+		<item name="Buffer de alarmas" href="buffer.html" />
+		<item name="Descargar" href="http://sourceforge.net/projects/jalarms/files/jAlarms/" />
+		<item name="English" href="../index.html" />
+	</menu>
+</body>
+<poweredBy>
+	<logo name="Hospedado en SourceForge" href="http://sourceforge.net/donate/index.php?group_id=263883"
+		img="http://images.sourceforge.net/images/project-support.jpg" />
+</poweredBy>
+</project>

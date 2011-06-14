@@ -1,0 +1,17 @@
+	-----
+	Alarm Sources
+	-----
+	Enrique Zamudio
+	-----
+
+Alarm Sources
+
+  In a big application, you may have several modules, and when an alarm is fired you may wish to notify different people depending on the module that is sending it. This is why the <<<AlarmSender.sendAlarm()>>> method takes an alarmSource parameter; you can specify the origin of the alarm. You can use anything you like in there; short strings are recommended.
+
+  Some alarm channels have a list of recipients, like email, SMPP and MSN. For these types of channels, you can have different lists of recipients depending on the alarm source, as well as the default list for undefined sources, or when <<<null>>> is passed as the source parameter.
+
+  For example, you can configure your MailChannel with a message template having the recipients <<a>>@example.com and <<b>>@example.com. But besides that, you can set up a different template for the <ex1> source, with the recipients <<cc>>@example.com and <<dd>>@example.com, and another template with <<xxx>>@example.com and <<zzz>>@example.com for the <ex2> source. So if an alarm is sent with <ex1> as the source, <<cc>> and <<dd>> will be notified, but an alarm with <ex2> as source will send an email to <<xxx>> and <<zzz>>; an alarm with no source, or an alarm with <ex9> as source will send the default email message to <<a>> and <<b>>.
+
+  The following diagram illustrates how each channel deals with the alarm sources. In this example, alarm message "A" is sent from two components, using two different sources, so it's considered a different message by the channels and sent to the corresponding recipients.
+
+[images/sources.png] How alarm sources work

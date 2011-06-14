@@ -1,0 +1,50 @@
+	-----
+	Buffer de alarmas
+	-----
+	Enrique Zamudio
+	-----
+
+Buffer de alarmas
+
+* El problema: Notificaciones críticas recurrentes
+
+  Al utilizar el método <<<AlarmSender.sendAlarmAlways()>>>, el comportamiento por defecto es enviar
+  inmediatamente el mensaje de alarma por todos los canales disponibles, sin importar el intervalo de reenvío
+  configurado en cada canal. Esto es muy útil para notificaciones críticas, pero puede ser también muy
+  impráctico si la notificación se envía una y otra vez en poco tiempo. Un ejemplo es un sistema que envía
+  una alarma cada vez que lo desconectan de un servicio externo, y que también envía una alarma cuando logra
+  reconectarse de manera automática. Si esto ocurre de vez en cuando, solamente se envían dos alarmas,
+  pero si el servicio externo tiene alguna falla grave y desconecta al sistema cada vez que se conecta, entonces
+  va a caer en un ciclo en el cual el sistema se conecta, lo desconectan, se reconecta, lo desconectan, etc.
+  Y estará enviando una alarma en cada ocasión, lo cual puede causar problemas en algunos canales, como por
+  ejemplo exceder el límite de envíos en la cuenta usada por el MailChannel o rebasar el número de peticiones
+  que se pueden hacer a Twitter en una hora. Además, tener un <timeline> o el buzón de correo atascado de
+  los mismos mensajes de alarma cientos de veces no es más útil que ver el mismo mensaje una docena de veces.
+
+* La solución: Buffer de alarmas
+
+  Para evitar este problema, se puede utilizar la propiedad <<<alarmTimeBuffer>>> del AlarmSender, especificando
+  el número de milisegundos que debe esperar antes de hacer realmente el envío de alarmas críticas, en caso
+  de que se generen dos o más veces en ese periodo de tiempo.
+
+  El valor por defecto es 0, lo cual significa que las alarmas son enviadas de inmediato. Pero si se fija un
+  valor positivo en esta propiedad durante la configuración del componente (un valor práctico es algo superior
+  a 30000 es decir 30 segundos), entonces <<<sendAlarmAlways()>>> no enviará el mensaje de inmediato, sino que
+  lo almacenará para que una tarea que se ejecuta periódicamente lo revise cada 30 segundos; si esta tarea
+  encuentra una alarma que solamente ha sido recibida una vez en 30 segundos, la envía en ese momento, pero
+  si ve que la alarma ha sido recibida dos o más veces en ese tiempo, entonces espera hasta que transcurra
+  el intervalo de tiempo definido en <<<alarmTimeBuffer>>> para que se haga el envío de esa alarma, agregando
+  al final del mensaje el número de veces que se recibió durante el tiempo que estuvo almacenada, y luego
+  olvidándola, para comenzar la cuenta de nuevo si es que se vuelve a recibir.
+
+* Ejemplo
+
+  Supongamos que tenemos un AlarmSender con un alarmTimeBuffer de 120000 (es decir, 2 minutos). Un componente
+  comienza a invocar <<<sendAlarmAlways("ayuda!")>>> a las 3PM y entra en un ciclo en donde envía el mismo
+  mensaje de alarma cada 10 segundos. Si no hubiera buffer configurado, la alarma sería enviada 18 veces en
+  esos 3 minutos. Pero debido al buffer que se tiene configurado, el primer mensaje de alarma <<<"ayuda!" (12x)">>>
+  será enviado hasta las 3:02 y luego se enviará otro <<<"ayuda! (6x)">>> a las 3:03. De esta manera los que
+  reciban las alarmas sabrán que la alarma fue emitida 18 veces, pero habrán recibido solamente 2 mensajes.
+
+  Si durante este tiempo (o a cualquier otra hora), otro componente invoca <<<sendAlarmAlways("Auxilio")>>>
+  solamente una vez, ese mensaje será enviado entre 30 y 60 segundos después de que fue invocado el método.

@@ -1,0 +1,48 @@
+	-----
+	Alarm Buffering
+	-----
+	Enrique Zamudio
+	-----
+
+Alarm Buffering
+
+* The problem: Recurring Critical Notifications
+
+  When you use the <<<AlarmSender.sendAlarmAlways()>>> method, the default behavior is to send the alarm
+  immediately through all channels, regardless of any resend intervals set in the channels. This is useful
+  for critical notifications, but can also be very annoying if the critical notification is sent over and over
+  again. An example would be if you send an alarm every time you get disconnected from an external service,
+  and another alarm when the system reconnects automatically. If this only happens once, only two alarms are sent,
+  but if the system is disconnected again shortly after reconnecting and this starts to happen in a loop
+  (system is disconnected, attempts to reconnect and succeeds but is disconnected again, reconnects, etc) then
+  a lot of alarms are going to be sent and this can cause other problems on some channels, such as exceeding
+  the send quota on an email account or going over the request limit on Twitter, etc. Plus, having your timeline
+  overflowing with the same alarms over and over again isn't anymore useful than seeing it just a dozen times.
+
+* The solution: Alarm Buffering
+
+  To avoid this problem, you can set the <<<alarmTimeBuffer>>> property in AlarmSender, specifying the number
+  of milliseconds you want to wait before actually sending critical alarms, in case they are generated twice
+  or more during that period of time.
+
+  The default value is 0, meaning alarms are sent immediately. If you set this value to something positive
+  during setup (practical values are above 30000 which is 30 seconds) then <<<sendAlarmAlways()>>> will not
+  send alarms immediately, but will rather store them and a scheduled task will check those stored alarms
+  every 30 seconds; if it finds an alarm that's been sitting in storage for at least 30 seconds and has been
+  received just once, the alarm is then sent through all channels and forgotten. But if the alarm has been
+  received twice or more during those first 30 seconds, then it will be kept in storage until the alarm time
+  buffer is reached (counting from the first time the alarm was received through the <<<sendAlarmAlways()>>>
+  method), and then it is sent, appending the number of times it was received to the original message, and
+  then it is forgotten, so that if it's received again, a new count will start for that message.
+
+* Example
+
+  Consider an AlarmSender with an alarmTimeBuffer of 120000 (that is, 2 minutes). A component starts calling
+  <<<sendAlarmAlways("help!")>>> at exactly 3PM, and enters a loop which sends that alarm every 10 seconds,
+  for three minutes. If no buffering had been setup, then the alarm would be sent 18 times over those 3 minutes.
+  But because of the alarm time buffer, the first alarm message <<<"help! (12x)">>> is actually sent at 3:02
+  and then another one <<<"help! (6x)">>> is sent at 3:03. This way the recipients of those alarms know that
+  the "help!" alarm has been issued 18 times in 3 minutes, by receiving only 2 messages.
+
+  If during this time (or at any other time), another component invokes <<<sendAlarmAlways("omg!!!")>>> just once,
+  that message will be sent between 30 to 60 seconds after the method was invoked.

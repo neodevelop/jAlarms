@@ -1,0 +1,57 @@
+	-----
+	Beginner's Guide
+	-----
+	Enrique Zamudio
+	-----
+
+  The simplest way you can configure jAlarms is through Spring or a similar framework for dependency injection.
+
+  Configuring jAlarms with Spring is very simple. You only need to setup the AlarmSender with all the channels that you want to use, inside an application context with the <<<annotation-config>>> setup, so that the <<<@PostConstruct>>> and <<<@Resource>>> annotations that are present in some channels can be processed.
+
+  Here is an example configuration for the MailChannel:
+
++-----
+<!-- this channel will send alarms to the recipients defined in the mail template -->
+<bean id="alarmMailChannel" class="com.solab.alarms.channels.MailChannel">
+	<property name="javaMailSender" ref="javaMailSender" />
+	<property name="mailTemplate"><bean class="org.springframework.mail.SimpleMailMessage">
+		<property name="subject" value="My server application ALARM" />
+		<property name="from" value="do-not-reply@mydomain.com" />
+		<property name="text"><value>My application has send this ALARM: ${msg}
+This notification has been automatically sent, do not reply.
+		</value></property>
+		<!-- This is obviously very important -->
+		<property name="to" value="sysadmin@mydomain.com" />
+	</bean></property>
+</bean>
++-----
+
+  And here's an example of the MsnChannel and the TwitterChannel:
+
++-----
+<!-- this channel will send alarms to everyone in the account's contact list -->
+<bean id="alarmMsnChannel" class="com.solab.alarms.channels.MsnChannel">
+	<property name="username" value="someMsnUsername" />
+	<property name="password" value="password" />
+</bean>
+
+<!-- this channel will post the alarms as the status in the Twitter account -->
+<bean id="twitterChannel" class="com.solab.alarms.channels.twitter.TwitterChannel">
+	<property name="accessToken" value="AccessTokenYouGetByRunningThe_TwitterAuth_Program" />
+	<property name="tokenSecret" value="SecretObtainedFromThe_TwitterAuth_programIncludedWith_jAlarms" />
+</bean>
++-----
+
+  Once you have configured the channels, all you need to do is setup the AlarmSender, which is the only bean you need to use from any component in your application.
+
++-----
+<bean id="alarmSender" class="com.solab.alarms.AlarmSender">
+	<property name="alarmChannels"><list>
+		<ref local="alarmMailChannel" />
+		<ref local="alarmMsnChannel" />
+		<ref local="twitterChannel" />
+	</list></property>
+</bean>
++-----
+
+  And then you just inject the <<<alarmSender>>> bean into any component that wants to use it to send alarms. In this example, any alarm will be sent by email to sysadmin@mydomain.com, to all the contacts of the MSN user <<someMsnUsername>>, and also will be posted as the status of the user you created for the app in Twitter (Twitter does not directly use the username/password of the user; it uses OAuth which is a little more convoluted but a little more secure).

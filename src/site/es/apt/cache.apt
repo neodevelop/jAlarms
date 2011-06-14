@@ -1,0 +1,68 @@
+	-----
+	Cache de alarmas
+	-----
+	Enrique Zamudio
+	-----
+
+Cache de alarmas
+
+  Hay muchos casos en los que un componente puede estar enviando una alarma muchas veces en un periodo corto de
+  tiempo. Si el AlarmSender realmente enviara la alarma cada vez que el componente se lo pide, los canales
+  rápidamente saturarían a los destinatarios. Una bandeja de entrada con cientos de correos todos con el mismo
+  mensaje de alarma no es una manera muy conveniente de recibir una notificación.
+
+  Para evitar esto, el AlarmSender tiene un cache interno para los mensajes de alarma, el cual lleva la cuenta
+  de la última vez que cada alarma fue enviada. Cuando un componente quiere enviar una alarma, el AlarmSender
+  utiliza este cache junto con el intervalo mínimo de reenvío de cada canal, para determinar si se debe
+  enviar el mensje por cada canal o no. Así que dependiendo del intervalo mínimo de cada canal, las alarmas
+  se pueden reenviar con mayor o menor frecuencia.
+
+* Configuración
+
+  jAlarms incluye dos mecanismos de alarmas. El mecanismo por defecto se usa de manera transparente si no se
+  configura uno de manera explícita, y consiste simplemente en un mapa (java.util.Map) que almacena la fecha
+  de último envío de cada alarma (tomando en cuenta su fuente). Esto es muy simple y no utiliza mucha memoria;
+  una aplicación que envíe 100 mensajes de alarma distintos tendrá como máximo 100 llaves en memoria, cada una
+  almacenando un Long.
+
+* memcached
+
+  En ocasiones hay dos o más aplicaciones funcionando de manera independiente pero que comparten algunos componentes
+  o se conectan a los mismos sistemas externos, y envían alarmas cuando uno de estos componentes o recursos
+  compartidos tiene un problema (una conexión a internet, o a un servidor de base de datos por ejemplo). En estos
+  casos, si el AlarmSender se configura de manera idéntica en cada aplicación, se van a enviar varias alarmas
+  idénticas, una por cada aplicación que la genere.
+
+  Lo anterior se puede evitar con el uso de {{{http://memcached.org/}memcached}}, que es un almacenamiento externo
+  en memoria utilizando el mecanismo llave-valor. Unicamente hay que configurar el cache de alarmas para
+  memcached, conectándolo a las instancias disponibles, y entonces se almacenarán ahí las llaves que representan
+  los mensajes de alarma; de esta forma, si dos o más aplicaciones quieren enviar la misma alarma varias veces,
+  sólo una de las aplicaciones hará el envío porque las demás aplicaciones detectarán la llave en memcached.
+
+** Configuración del cache con memcached
+
+  Lo primero que se necesita es acceso a cuando menos una instancia de memcached. Por el momento, jAlarms solamente
+  soporta acceso sin protección a memcached. Se necesita crear una intancia de <<<AlarmMemcachedClient>>> y fijar
+  la propiedad <<<servers>>>, que es una lista de cadenas que representan los servidores. Cada cadena es la IP
+  o nombre de un servidor donde hay una instancia de memcached, con el puerto opcionalmente separado por dos puntos
+  en caso de que no se use el puerto default (por ejemplo <<<192.168.0.1:12345>>> o <<<192.168.0.2>>>).
+
+  Luego hay que pasar este objeto al AlarmSender en su propiedad <<<alarmCache>>> y eso es todo; AlarmSender usará
+  ese cache para determinar si un mensaje se debe reenviar o no.
+
+*** ¿Pero cómo es que funciona?
+
+  El cliente de memcached crea una llave por cada mensaje que se le pasa en los métodos <<<store()>>> o
+  <<<shouldResend>>>. El formato de la llave es <<<jalarms:channelID:source:message_hash>>>, en donde
+
+  * <<<jalarms>>> es un prefijo invariable para todas las llaves (esto es útil para cuando se usan herramientas
+  de estadísticas de memcached).
+
+  * <<<channelID>>> es el identificador de canal, porque cada canal tiene un intervalo distinto. Este valor es
+  generado con ayuda del <<<hashCode()>>> del canal.
+
+  * <<<source>>> es la fuente de la alarma. Si no se especifica una, entonces se deja una cadena vacía.
+
+  * <<<message_hash>>> es una digestión MD5 del mensaje de alarma, codificada en hexadecimal. Esto es para no
+  tener que usar el mensaje completo como parte de la llave, ya que hay memcached tiene un límite de longitud
+  para las llaves que se pueden usar.

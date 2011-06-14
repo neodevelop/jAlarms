@@ -1,0 +1,66 @@
+	-----
+	Canales de alarmas
+	-----
+	Enrique Zamudio
+	-----
+
+Canales de alarmas implementados
+
+  Actualmente, jAlarms tiene la capacidad para enviar alarmas por medio de los siguientes canales:
+
+  [test] Este es un canal muy simple que se puede usar en ambientes de desarrollo. Es muy conveniente cuando no
+  se quiere realmente enviar un alarma por ningún medio pero se quiere probar que se genera un mensaje bajo
+  ciertas circunstancias para verificar que la configuración del AlarmSender es correcta. Lo único que este canal
+  hace es imprimir el mensaje de alarma en la salida estándar.
+
+  [email] Este canal utiliza la clase JavaMailSender de Spring, para enviar alarmas por correo, así como un
+  SimpleMailMessage de Spring como el templete para tener el tema, remitente y destinatarios y algo de texto en
+  el mensaje. El texto del mensaje debe contener la cadena <<<$\{msg\}>>>, la cual es sustituida con el mensaje
+  de alarma al enviar el correo.
+
+  [Twitter] Este canal usa una cuenta de {{{http://twitter.com/}Twitter}} para publicar alarmas como <tweets>.
+  Esto es muy útil para poder monitorear varias aplicaciones; se puede crear una cuenta para cada aplicación y
+  asociarla con jAlarms utilizando el programa TwitterAuth, que viene incluido en la biblioteca. Este programa
+  entrega datos datos que se ponen como propiedades en el TwitterChannel. Los administradores de sistemas,
+  desarrolladores, gente de soporte, etc pueden seguir esas cuentas para enterarse de las notificaciones de
+  alarmas en cualquiera de las aplicaciones monitoreadas.
+
+  [Proceso externo] El CommandLineChannel permite ejecutar un proceso externo que maneje el mensaje de alarma.
+  Se puede pasar la alarma como parámetro en la linea de comando, o bien escribirlo a la entrada estándar del
+  programa externo.
+
+  [Invocación HTTP] Este canal envía la alarma a un URL por medio de un GET o POST de HTTP. Con GET, la alarma
+  se envia como un parámetro de query, y con POST se envía como parte de una serie de datos que se configuran
+  en el canal.
+
+  [MSN Messenger] Este canal utiliza una cuenta de MSN para enviar alarmas. Para usar este canal, primero hay
+  que crear una cuenta y agregar todos los contactos que son quienes van a recibir las alarmas como un mensaje
+  instantáneo. El canal también permite agregar o quitar contactos por medio de métodos en el objeto.
+
+  [SMPP] Este canal utiliza una conexión tipo Transmitter del protocolo SMPP versión 3.4, para enviar alarmas
+  como mensajes cortos a dispositivos móviles, cuyos números se configuran en el SmppChannel. <<IMPORTANTE:>>
+  para poder usar este canal se necesita una cuenta de SMPP y acceso a una SMSC (Central de mensajes cortos)
+  de un proveedor celular.
+
+[]
+  Todos estos canales manejan una propiedad llamada <<<minResendInterval>>>, que es el tiempo a esperar
+  (en milisegundos) antes de enviar nuevamente un mensaje enviado previamente. Cada canal puede tener un
+  intervalo distinto; por ejemplo se puede tener un intervalo de varios minutos en el MailChannel y un valor
+  más bajo en el TwitterChannel. El valor por defecto es 60 segundos. El intervalo de reenvío es utilizado por
+  el {{{cache.html}cache de alarmas}}, para determinar si un mensaje debe ser reenviado por cada uno de los
+  canales configurados.
+
+  Todos estos canales extienden la clase <<<AbstractAlarmChannel>>>, que tiene funcionalidad implementada
+  la cual facilita la implementación de canales nuevos. Por ejemplo, cuenta con un ExecutorService de un solo
+  hilo, el cual utiliza para encolar las alarmas a enviar, para no causar un retraso en el flujo normal de la
+  aplicación.
+
+Canales personalizados
+
+  En caso de tener acceso a un servicio de notificaciones propietario o muy específico en una aplicación, como por
+  ejemplo un web service, o un conmutador con el que se puedan generar llamadas, se pueden implementar canales
+  para aprovechar estos servicios. La manera más sencilla es extender la clase <<<AbstractAlarmChannel>>> y
+  únicamente se necesita implementar el método <<<createSendTask>>> el cual debe devolver un <<<Runnable>>> que
+  será ejecutado en el ExecutorService del canal, para realizar el envío de la alarma por medio del servicio
+  disponible. En caso de no poder extender la clase, hay que implementar entonces la interfaz
+  <<<AlarmChannel>>>.

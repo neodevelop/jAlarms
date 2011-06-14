@@ -1,0 +1,81 @@
+	---
+	Anotaciones y AOP
+	---
+	Enrique Zamudio
+	---
+
+Uso de anotaciones y programación orientada a aspectos (AOP)
+
+  jAlarms también puede funcionar en conjunto con {{{http://www.eclipse.org/aspectj/}AspectJ}} para anotar
+  métodos o clases y así habilitarlos para el envío de alarmas en caso que se arroje una excepción no
+  interceptada, en tiempo de ejecución. La manera de hacer esto es configurar la clase <<<AlarmAspect>>> con
+  una referencia a un <<<AlarmSender>>> y luego agregar ese aspecto a la configuración de AspectJ.
+
+  La manera más sencilla de lograr esto en una aplicación es con ayuda de Spring AOP, ya que únicamente hay que
+  agregar el esquema de AOP al ApplicationContext y declarar el mecanismo de AspectJ. La configuración es como
+  sigue:
+
++-----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+<!-- Esto es para habilitar los auto-proxies y generar un proxy por cada componente anotado.
+  Esto es necesario para que funcione el AlarmAspect. -->
+<aop:aspectj-autoproxy />
+
+<bean id="alarmAspect" class="com.solab.alarms.aop.AlarmAspect">
+
+  <!-- Si solamente hay un AlarmSender en el ApplicationContext y se llama "alarmSender",
+  entonces no es necesario especificar esta propiedad -->
+  <property name="alarmSender" ref="alarmSender" />
+
+  <property name="message" value="Mensaje de alarma por defecto" />
+  <!-- Esta propiedad se puede poner en 0 para omitir la traza de la excepción, o -1
+  para incluirla completa, o cualquier otro número para incluir como máximo tantas lineas de traza -->
+  <property name="includeStackTrace" value="2" />
+</bean>
+
+</beans>
++-----
+
+  Posteriormente, se puede utilizar la anotación <<<@AlarmOnException>>> en cualquier clase o método, y si
+  ocurre una RuntimeException que no se intercepta, se enviará una alarma (aunque la excepción será arrojada
+  de todas formas). La anotación tiene algunas propiedades (todas opcionales) para configurar su funcionamiento.
+
++-----
+@AlarmOnException(message="Esta es la alarma", source="alguna-fuente", stack=5)
+public class MiClase {
+
+  public void hazAlgo() {
+    //Si se arroja una RuntimeException aqui, se envia una alarma.
+  }
+
+  public void hazOtraCosa() {
+    //Aqui tambien se envia alarma en caso de RuntimeException.
+  }
+}
+
+public class OtraClas {
+
+  public void hazAlgo() {
+    //Aqui no se envia alarma si ocurre una excepcion
+  }
+
+  @AlarmOnException
+  public void hazOtraCosa() {
+    //Se envia alarma en caso de excepcion, con el mensaje configurado en el aspecto,
+    //sin fuente, y tantas lineas de traza como se hayan configurado en el aspecto.
+  }
+}
++-----
+
+  <<NOTA IMPORTANTE sobre los proxies:>> Si se anotan métodos que son parte de una interfaz, entonces se va
+  a crear un proxy dinámico de JDK. Si se anota una clase que implementa una o varias interfaces, entonces
+  solamente se enviarán alarmas en caso de excepciones en los métodos que son parte de una interfaz. Si
+  se desea enviar alarmas en caso de excepción en <<cualquiera>> de los métodos, o anotar un método que no
+  es parte de una interfaz, entonces se necesita generar un proxy de {{{http://cglib.sourceforge.net/}CGLIB}}.
+  Para usar proxies de CGLIB por defecto, hay que agregar el atributo <<<proxy-target-class="true">>> al tag
+  <<<aop:aspectj-autoproxy>>> en la configuración de Spring.
