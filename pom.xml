@@ -21,9 +21,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/tags/jalarms-1.5.2</connection>
-		<developerConnection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/tags/jalarms-1.5.2</developerConnection>
-		<url>http://jalarms.svn.sourceforge.net/viewvc/jalarms/tags/jalarms-1.5.2</url>
+		<connection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms</connection>
+		<developerConnection>scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms</developerConnection>
+		<url>http://jalarms.svn.sourceforge.net/viewvc/jalarms/</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
