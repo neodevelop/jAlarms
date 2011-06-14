@@ -3,11 +3,11 @@
   <parent>
     <artifactId>jalarms</artifactId>
     <groupId>net.sf.jalarms</groupId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
   </parent>
   <groupId>net.sf.jalarms</groupId>
   <artifactId>jalarms-channels</artifactId>
-  <version>1.5.3-SNAPSHOT</version>
+  <version>1.5.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
   <name>jAlarms Channels</name>
   <description>This project contains alarm channels and other classes that have external dependencies.</description>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>net.sf.jalarms</groupId>
 			<artifactId>jalarms-core</artifactId>
-			<version>1.5.3-SNAPSHOT</version>
+			<version>1.5.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.java-jml</groupId>

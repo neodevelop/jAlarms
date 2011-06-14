@@ -3,11 +3,11 @@
   <parent>
     <artifactId>jalarms</artifactId>
     <groupId>net.sf.jalarms</groupId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
   </parent>
   <groupId>net.sf.jalarms</groupId>
   <artifactId>jalarms-core</artifactId>
-  <version>1.5.3-SNAPSHOT</version>
+  <version>1.5.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
   <name>jAlarms Core</name>
   <description>This project contains the jAlarms core classes.</description>
