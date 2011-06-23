@@ -24,4 +24,23 @@ subprojects {
 		testCompile 'junit:junit:4.8.2'
 		testRuntime 'org.slf4j:slf4j-simple:1.6.1', 'org.slf4j:jcl-over-slf4j:1.6.1'
 	}
+	tasks.javadoc.options.use=true
+	tasks.javadoc.options.links=[
+		'http://download.oracle.com/javase/6/docs/api/', 'http://slf4j.org/apidocs/',
+		'http://static.springsource.org/spring/docs/3.0.x/javadoc-api/',
+		'http://java-jml.sourceforge.net/javadocs/jml_1.0b4/', 'http://dustin.github.com/java-memcached-client/apidocs/',
+		'http://jalarms.sourceforge.net/core/apidocs/'
+	]
+	task javadocJar(type:Jar, dependsOn:'javadoc') {
+		from javadoc.destinationDir
+		classifier='javadoc'
+	}
+	task sourcesJar(type:Jar) {
+		from sourceSets.main.allSource
+		classifier='sources'
+	}
+	artifacts {
+		archives javadocJar
+		archives sourcesJar
+	}
 }
