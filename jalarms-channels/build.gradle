@@ -14,3 +14,5 @@ dependencies {
 		'jivesoftware:smack:3.1.0', 'jivesoftware:smackx:3.1.0',
 		project(':jalarms-core')
 }
+tasks.javadoc.options.links+='http://java-jml.sourceforge.net/javadocs/jml_1.0b4/'
+tasks.javadoc.options.links+='http://dustin.github.com/java-memcached-client/apidocs/'
