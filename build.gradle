@@ -1,0 +1,23 @@
+dependsOnChildren()
+defaultTasks 'build'
+
+allprojects {
+	apply plugin:'java'
+	version='1.5.3-SNAPSHOT'
+	group='net.sf.jalarms'
+}
+
+subprojects {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	configurations {
+		all*.exclude group:'commons-logging', module:'commons-logging'
+	}
+	dependencies {
+		compile 'org.slf4j:slf4j-api:1.6.1'
+		testCompile 'junit:junit:4.8.2'
+		testRuntime 'org.slf4j:slf4j-simple:1.6.1', 'org.slf4j:jcl-over-slf4j:1.6.1'
+	}
+}

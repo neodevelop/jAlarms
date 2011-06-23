@@ -1,0 +1,1 @@
+include 'jalarms-core', 'jalarms-channels', 'jalarms-aop'

@@ -1,0 +1,15 @@
+defaultTasks 'build'
+
+repositories {
+	mavenRepo name:'jml-repo', urls:['http://java-jml.sourceforge.net/maven']
+	mavenRepo name:'spy', urls:['http://bleu.west.spy.net/~dustin/m2repo']
+}
+
+dependencies {
+	compile 'net.sourceforge.java-jml:jml:1.0b4', 'spy:memcached:2.5',
+		'com.adenki:smppapi:0.3.9', 'javax.mail:mail:1.4.1',
+		'org.springframework:spring-context-support:3.0.5.RELEASE',
+		'org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsendnsca-core:1.3.1_2',
+		'jivesoftware:smack:3.1.0', 'jivesoftware:smackx:3.1.0',
+		project(':jalarms-core')
+}

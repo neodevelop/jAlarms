@@ -1,0 +1,7 @@
+dependencies {
+	compile 'org.aspectj:aspectjrt:1.6.11', project(':jalarms-core')
+	testCompile 'org.springframework:spring-test:3.0.5.RELEASE'
+	testRuntime 'org.springframework:spring-beans:3.0.5.RELEASE',
+		'org.springframework:spring-context:3.0.5.RELEASE',
+		'org.aspectj:aspectjweaver:1.6.11', 'cglib:cglib:2.2.2'
+}
