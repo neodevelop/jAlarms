@@ -1,12 +1,16 @@
+//This is the main build script for jAlarms. It builds the subprojects included in settings.gradle.
 dependsOnChildren()
 defaultTasks 'build'
 
+//Use the Java plugin on all projects, and set the same version and group.
 allprojects {
 	apply plugin:'java'
 	version='1.5.3-SNAPSHOT'
 	group='net.sf.jalarms'
 }
 
+//Here we set common stuff for all subprojects: the Maven repos, exclude commons-logging (use jcl-over-slf4j in UT),
+//set some common dependencies
 subprojects {
 	repositories {
 		mavenLocal()
