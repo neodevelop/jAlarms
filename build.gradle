@@ -43,3 +43,4 @@ subprojects {
 		archives sourcesJar
 	}
 }
+tasks.jar.enabled=false
