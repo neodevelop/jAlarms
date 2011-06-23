@@ -23,7 +23,7 @@ public class TestBuffer implements UnitTestChannel.ChanDelegate {
 	public void setup() {
 		sender = new AlarmSender();
 		sender.setAlarmChannels(Collections.singletonList((AlarmChannel)chan));
-		chan.delegate = this;
+		chan.setDelegate(this);
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class TestBuffer implements UnitTestChannel.ChanDelegate {
 		sender.sendAlarmAlways("test");
 		try { Thread.sleep(7000); } catch (InterruptedException ex) {}
 		log.info("Sending alarm 3/3 with buffer, wait for send {}", String.format("%TT", new Date()));
-		chan.sent.set(false);
+		chan.clearSent();
 		sender.sendAlarmAlways("test");
 		chan.waitForSend();
 		t1 = System.currentTimeMillis();

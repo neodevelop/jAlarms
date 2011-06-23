@@ -17,8 +17,22 @@ public class UnitTestChannel implements AlarmChannel {
 	long stamp;
 	long lastSent;
 	int resend = 5000;
-	ChanDelegate delegate;
-	AtomicBoolean sent = new AtomicBoolean();
+	private ChanDelegate delegate;
+	private AtomicBoolean sent = new AtomicBoolean();
+
+	/** Clear the sent flag. */
+	public void clearSent() {
+		sent.set(false);
+	}
+	/** Returns true if the alarm has been (supposedly) sent. */
+	public boolean isSent() {
+		return sent.get();
+	}
+	/** Sets the delegate that will be notified when the alarm is supposed to
+	 * be sent. */
+	public void setDelegate(ChanDelegate value) {
+		delegate = value;
+	}
 
 	@Override
 	public void send(String msg, String source) {
@@ -33,12 +47,15 @@ public class UnitTestChannel implements AlarmChannel {
 		sent.set(true);
 	}
 
-	void prepare() {
+	/** Clears the sent flag and records the current timestamp. */
+	public void prepare() {
 		stamp = System.currentTimeMillis();
 		sent.set(false);
 	}
 
-	void waitForSend() {
+	/** Waits inside a loop, blocking the calling thread until the channel
+	 * is supposed to send the alarm and has notified the delegate. */
+	public void waitForSend() {
 		try {
 			int count = 0;
 			while (!sent.get()) {
@@ -68,7 +85,11 @@ public class UnitTestChannel implements AlarmChannel {
 	public void shutdown() {
 	}
 
-	static interface ChanDelegate {
+	/** Implement this interface if you want to get notified when the
+	 * channel received the send message. */
+	public static interface ChanDelegate {
+		/** Notifies the delegate that the alarm message has been sent, at
+		 * the specified time. */
 		public void alarmReceived(String msg, long when);
 	}
 

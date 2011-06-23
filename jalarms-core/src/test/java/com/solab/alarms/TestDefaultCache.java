@@ -32,8 +32,8 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		sender.setAlarmCache(createCache());
 		chan1.resend = c1t;
 		chan2.resend = c2t;
-		chan1.delegate = this;
-		chan2.delegate = this;
+		chan1.setDelegate(this);
+		chan2.setDelegate(this);
 		ArrayList<AlarmChannel> chans = new ArrayList<AlarmChannel>(2);
 		chans.add(chan1);
 		chans.add(chan2);
@@ -69,7 +69,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		sender.sendAlarm("msg1", "src2");
 		sender.sendAlarm("msg1");
 		try { Thread.sleep(50); } catch (InterruptedException ex) {}
-		assert !chan1.sent.get() && !chan2.sent.get();
+		assert !chan1.isSent() && !chan2.isSent();
 		assert chan1.lastSent == ls1 && chan2.lastSent == ls2;
 
 		//Send using 'always', should be sent
@@ -95,7 +95,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls1 = chan1.lastSent;
 		assert ls1 - chan1.stamp >= 0 && ls1 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan2.sent.get() && chan2.lastSent == ls2;
+		assert !chan2.isSent() && chan2.lastSent == ls2;
 
 		//Check that msg2 is sent through both channels
 		log.info("Sending msg2 {}", String.format("%TT", new Date()));
@@ -122,7 +122,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls2 = chan2.lastSent;
 		assert ls2 - chan2.stamp >= 0 && ls2 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan1.sent.get() && chan1.lastSent == ls1;
+		assert !chan1.isSent() && chan1.lastSent == ls1;
 
 		//msg2 should be ignored by both channels
 		log.info("Testing that msg2 is ignored by both channels {}", String.format("%TT", new Date()));
@@ -134,7 +134,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		sender.sendAlarm("msg2", "src1");
 		sender.sendAlarm("msg2", "src2");
 		try { Thread.sleep(50); } catch (InterruptedException ex) {}
-		assert !chan1.sent.get() && !chan2.sent.get();
+		assert !chan1.isSent() && !chan2.isSent();
 		assert chan1.lastSent == ls1 && chan2.lastSent == ls2;
 
 		//Wait
@@ -151,7 +151,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls1 = chan1.lastSent;
 		assert ls1 - chan1.stamp >= 0 && ls1 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan2.sent.get() && chan2.lastSent == ls2;
+		assert !chan2.isSent() && chan2.lastSent == ls2;
 
 		log.info("msg2 should be sent through chan1, ignored by chan2");
 		chan1.prepare();
@@ -163,7 +163,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls1 = chan1.lastSent;
 		assert ls1 - chan1.stamp >= 0 && ls1 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan2.sent.get() && chan2.lastSent == ls2;
+		assert !chan2.isSent() && chan2.lastSent == ls2;
 
 		//Wait
 		log.info("waiting #5: {} millis {}", w1, String.format("%TT", new Date()));
@@ -175,7 +175,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		sender.sendAlarm("msg1", "src2");
 		sender.sendAlarm("msg1");
 		try { Thread.sleep(50); } catch (InterruptedException ex) {}
-		assert !chan1.sent.get() && !chan2.sent.get();
+		assert !chan1.isSent() && !chan2.isSent();
 		assert chan1.lastSent == ls1 && chan2.lastSent == ls2;
 
 		log.info("msg2 should be sent through chan2, ignored by chan1");
@@ -188,7 +188,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls2 = chan2.lastSent;
 		assert ls2 - chan2.stamp >= 0 && ls2 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan1.sent.get() && chan1.lastSent == ls1;
+		assert !chan1.isSent() && chan1.lastSent == ls1;
 
 		//Wait
 		log.info("waiting #6: {} millis {}", w1, String.format("%TT", new Date()));
@@ -215,7 +215,7 @@ public class TestDefaultCache implements UnitTestChannel.ChanDelegate {
 		ls1 = chan1.lastSent;
 		assert ls1 - chan1.stamp >= 0 && ls1 - chan1.stamp < 1000;
 		//chan2 should have not sent anything
-		assert !chan2.sent.get() && chan2.lastSent == ls2;
+		assert !chan2.isSent() && chan2.lastSent == ls2;
 	}
 
 	@Override

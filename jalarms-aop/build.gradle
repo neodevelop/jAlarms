@@ -5,3 +5,11 @@ dependencies {
 		'org.springframework:spring-context:3.0.5.RELEASE',
 		'org.aspectj:aspectjweaver:1.6.11', 'cglib:cglib:2.2.2'
 }
+
+//We need to add some test classes from the core project (UnitTestChannel)
+sourceSets {
+	test {
+		compileClasspath += project(':jalarms-core').sourceSets.test.classes
+		runtimeClasspath += project(':jalarms-core').sourceSets.test.classes
+	}
+}

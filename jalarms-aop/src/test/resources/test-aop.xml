@@ -16,9 +16,11 @@
 	p:alarmSender-ref="alarmSender"
 	p:message="MSG from ASPECT" />
 
+<bean id="utChan" class="com.solab.alarms.UnitTestChannel" />
+
 <bean id="alarmSender" class="com.solab.alarms.AlarmSender">
 	<property name="alarmChannels"><list>
-		<bean class="com.solab.alarms.channels.TestChannel" />
+		<ref local="utChan" />
 	</list></property>
 </bean>
 
