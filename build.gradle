@@ -1,4 +1,8 @@
 //This is the main build script for jAlarms. It builds the subprojects included in settings.gradle.
+apply plugin: 'maven'
+
+description='A simple to use alarm system for Java server applications. With jAlarms you can notify different users through different means about certain events in your application, so they can receive notice via email, MSN, SMS, Twitter, etc.'
+
 dependsOnChildren()
 defaultTasks 'build'
 
@@ -44,3 +48,62 @@ subprojects {
 	}
 }
 tasks.jar.enabled=false
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'de.huxhorn.gradle:de.huxhorn.gradle.pgp-plugin:0.0.3'
+	}
+}
+
+uploadArchives {
+	repositories.mavenDeployer {
+		configuration=configurations.archives
+		repository(url: "http://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+			authentication(userName:nexusUsername, password:nexusPassword)
+		}
+		pom.project {
+			name 'jAlarms - A simple alarm notification system for Java'
+			packaging 'jar'
+			description 'A simple to use alarm system for Java server applications. With jAlarms you can notify different users through different means about certain events in your application, so they can receive notice via email, MSN, SMS, Twitter, etc.'
+			url 'http://jalarms.sourceforge.net/'
+			inceptionYear '2009'
+			scm {
+				url 'http://jalarms.svn.sourceforge.net/viewvc/jalarms/trunk/jalarms'
+				connection 'scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/trunk/jalarms'
+				developerConnection 'scm:svn:https://jalarms.svn.sourceforge.net/svnroot/jalarms/trunk/jalarms'
+			}
+			licenses {
+				license {
+					name 'GNU Lesser General Public License, version 2.1'
+					url 'http://www.gnu.org/licenses/lgpl-2.1.html'
+					distribution 'repo'
+				}
+			}
+			developers {
+				developer {
+					id 'chochos'
+					name 'Enrique Zamudio Lopez'
+					email 'chochos@users.sourceforge.net'
+					url 'http://javamexico.org/blogs/ezamudio'
+					roles {
+						role 'Architect'
+						role 'Developer'
+					}
+					properties {
+						twitter 'chochosmx'
+					}
+					timezone 'America/Mexico_City'
+				}
+			}
+		}
+	}
+}
+apply plugin: de.huxhorn.gradle.pgp.PgpPlugin
+pgp {
+	secretKeyRingFile = new File("${System.properties['user.home']}/.gnupg/secring.gpg")
+	keyId=pgpKeyId
+	password=pgpKeyPassphrase
+}

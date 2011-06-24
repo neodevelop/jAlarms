@@ -1,3 +1,5 @@
+description='An AOP extension for jAlarms, based on AspectJ and Spring AOP.'
+
 dependencies {
 	compile 'org.aspectj:aspectjrt:1.6.11', project(':jalarms-core')
 	testCompile 'org.springframework:spring-test:3.0.5.RELEASE'

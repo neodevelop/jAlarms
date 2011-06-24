@@ -1,3 +1,4 @@
+description='This library contains additional jAlarms channels that have external dependencies to several other projects. You only need to add the runtime dependencies for the channels you will use.'
 defaultTasks 'build'
 
 //We need additional repos here

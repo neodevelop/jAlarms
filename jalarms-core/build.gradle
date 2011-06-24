@@ -1,1 +1,2 @@
 //We don't really need anything here, all setup is done in parent project
+description='This library contains the core jAlarms classes.'
