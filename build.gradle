@@ -46,6 +46,8 @@ subprojects {
 		archives javadocJar
 		archives sourcesJar
 	}
+	//We will add the subproject's artifacts to the root project so they will be uploaded to Sonatype
+	configurations.archives.artifacts.each { armatoste -> rootProject.configurations.archives.addArtifact armatoste }
 }
 tasks.jar.enabled=false
 
